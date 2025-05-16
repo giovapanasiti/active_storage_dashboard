@@ -690,17 +690,26 @@
     
     // Animate progress bars on scroll
     const progressBars = document.querySelectorAll('.progress-fill');
+    // Track which progress bars have already been animated
+    const animatedBars = new Set();
     
     const animateProgressBars = () => {
-      progressBars.forEach(bar => {
+      progressBars.forEach((bar, index) => {
         const rect = bar.getBoundingClientRect();
         const isVisible = (rect.top <= window.innerHeight && rect.bottom >= 0);
         
-        if (isVisible) {
-          const width = bar.style.width;
+        if (isVisible && !animatedBars.has(index)) {
+          // Store the target width
+          const targetWidth = bar.style.width;
+          // Set initial width to 0
           bar.style.width = '0%';
+          // Add to our set of animated bars
+          animatedBars.add(index);
+          
+          // Animate to target width
           setTimeout(() => {
-            bar.style.width = width;
+            bar.style.transition = 'width 0.8s ease-out';
+            bar.style.width = targetWidth;
           }, 100);
         }
       });
@@ -709,7 +718,7 @@
     // Initial animation
     animateProgressBars();
     
-    // Animate on scroll
+    // Animate on scroll, but only for newly visible bars
     window.addEventListener('scroll', animateProgressBars);
   });
 </script> 
