@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Active Storage Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --primary-color: #4a6bef;
+      --secondary-color: #6c757d;
+      --success-color: #28a745;
+      --info-color: #17a2b8;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --light-color: #f8f9fa;
+      --dark-color: #343a40;
+      --body-bg: #f7f9fc;
+      --sidebar-bg: #ffffff;
+      --card-bg: #ffffff;
+      --text-color: #212529;
+      --border-color: #dee2e6;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--text-color);
+      background-color: var(--body-bg);
+    }
+    
+    a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    .sidebar {
+      width: 250px;
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      padding: 1.5rem;
+    }
+    
+    .content {
+      flex: 1;
+      padding: 1.5rem;
+    }
+    
+    .sidebar-heading {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+    }
+    
+    .sidebar-menu li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-menu a {
+      display: block;
+      padding: 0.5rem 0;
+      color: var(--dark-color);
+    }
+    
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+      color: var(--primary-color);
+    }
+    
+    .page-title {
+      margin-bottom: 1.5rem;
+      font-size: 1.75rem;
+      font-weight: 500;
+    }
+    
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 0.25rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      margin-bottom: 1.5rem;
+    }
+    
+    .card-header {
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 0;
+      background-color: rgba(0, 0, 0, 0.03);
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 500;
+    }
+    
+    .card-body {
+      padding: 1.25rem;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .stat-card {
+      padding: 1.25rem;
+      text-align: center;
+      background-color: var(--card-bg);
+      border-radius: 0.25rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .stat-card-value {
+      font-size: 2rem;
+      font-weight: 500;
+      color: var(--primary-color);
+    }
+    
+    .stat-card-label {
+      color: var(--secondary-color);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    th {
+      background-color: rgba(0, 0, 0, 0.03);
+      font-weight: 500;
+    }
+    
+    tbody tr:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 1.5rem;
+    }
+    
+    .pagination-link {
+      display: inline-block;
+      padding: 0.375rem 0.75rem;
+      margin: 0 0.25rem;
+      border-radius: 0.25rem;
+      background-color: var(--light-color);
+      color: var(--dark-color);
+      text-decoration: none;
+    }
+    
+    .pagination-link:hover {
+      background-color: var(--primary-color);
+      color: white;
+      text-decoration: none;
+    }
+    
+    .pagination-link.current {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .pagination-link.disabled {
+      color: var(--secondary-color);
+      pointer-events: none;
+    }
+    
+    .pagination-ellipsis {
+      padding: 0.375rem 0.5rem;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25em 0.4em;
+      font-size: 0.75em;
+      font-weight: 500;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 0.25rem;
+    }
+    
+    .badge-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .badge-secondary {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    .badge-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .badge-info {
+      background-color: var(--info-color);
+      color: white;
+    }
+    
+    .flash {
+      padding: 0.75rem 1.25rem;
+      margin-bottom: 1rem;
+      border-radius: 0.25rem;
+    }
+    
+    .flash-alert {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    
+    .flash-notice {
+      background-color: #d1ecf1;
+      border: 1px solid #bee5eb;
+      color: #0c5460;
+    }
+    
+    .back-link {
+      margin-right: 10px;
+    }
+    
+    .download-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      background-color: var(--success-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .download-btn:hover {
+      text-decoration: none;
+      opacity: 0.9;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h1 class="sidebar-heading">Active Storage Dashboard</h1>
+      <ul class="sidebar-menu">
+        <li><a href="<%= active_storage_dashboard.root_path %>" class="<%= controller_name == 'dashboard' ? 'active' : '' %>">Dashboard</a></li>
+        <li><a href="<%= active_storage_dashboard.blobs_path %>" class="<%= controller_name == 'blobs' ? 'active' : '' %>">Blobs</a></li>
+        <li><a href="<%= active_storage_dashboard.attachments_path %>" class="<%= controller_name == 'attachments' ? 'active' : '' %>">Attachments</a></li>
+        <li><a href="<%= active_storage_dashboard.variant_records_path %>" class="<%= controller_name == 'variant_records' ? 'active' : '' %>">Variant Records</a></li>
+      </ul>
+    </div>
+    
+    <div class="content">
+      <% if flash[:alert] %>
+        <div class="flash flash-alert"><%= flash[:alert] %></div>
+      <% end %>
+      
+      <% if flash[:notice] %>
+        <div class="flash flash-notice"><%= flash[:notice] %></div>
+      <% end %>
+      
+      <%= yield %>
+    </div>
+  </div>
+  
+  <script>
+    // Simple vanilla JS for any interactive elements
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add any JavaScript functionality here if needed
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,42 @@
+<h1 class="page-title">Active Storage Variant Records</h1>
+
+<div class="card">
+  <div class="card-body">
+    <% if defined?(ActiveStorage::VariantRecord) %>
+      <% if @variant_records.any? %>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Blob ID</th>
+              <th>Variation Digest</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @variant_records.each do |variant_record| %>
+              <tr>
+                <td><%= variant_record.id %></td>
+                <td><%= variant_record.blob_id %></td>
+                <td><%= variant_record.variation_digest %></td>
+                <td>
+                  <a href="<%= variant_record_path(variant_record) %>">View Details</a>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        
+        <%= pagination_links(@total_count) %>
+      <% else %>
+        <p>No variant records found.</p>
+      <% end %>
+    <% else %>
+      <div class="alert">
+        <p>
+          Variant Records are only available in Rails 6.1+. Your current Rails version does not support this feature.
+        </p>
+      </div>
+    <% end %>
+  </div>
+</div> 

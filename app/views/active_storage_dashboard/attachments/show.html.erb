@@ -1,0 +1,79 @@
+<h1 class="page-title">Attachment Details</h1>
+
+<div class="card">
+  <div class="card-header">Attachment Information</div>
+  <div class="card-body">
+    <table>
+      <tr>
+        <th>ID</th>
+        <td><%= @attachment.id %></td>
+      </tr>
+      <tr>
+        <th>Name</th>
+        <td><%= @attachment.name %></td>
+      </tr>
+      <tr>
+        <th>Record Type</th>
+        <td><%= @attachment.record_type %></td>
+      </tr>
+      <tr>
+        <th>Record ID</th>
+        <td><%= @attachment.record_id %></td>
+      </tr>
+      <tr>
+        <th>Record</th>
+        <td>
+          <% record = @attachment.record rescue nil %>
+          <% if record %>
+            <%= record.to_s %> (ID: <%= record.id %>)
+          <% else %>
+            Record not found or inaccessible
+          <% end %>
+        </td>
+      </tr>
+      <tr>
+        <th>Created At</th>
+        <td><%= @attachment.created_at.strftime('%Y-%m-%d %H:%M:%S') %></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">Associated Blob</div>
+  <div class="card-body">
+    <table>
+      <tr>
+        <th>ID</th>
+        <td><%= @blob.id %></td>
+      </tr>
+      <tr>
+        <th>Filename</th>
+        <td><%= @blob.filename %></td>
+      </tr>
+      <tr>
+        <th>Content Type</th>
+        <td><%= @blob.content_type || 'Unknown' %></td>
+      </tr>
+      <tr>
+        <th>Size</th>
+        <td><%= format_bytes(@blob.byte_size) %></td>
+      </tr>
+      <tr>
+        <th>Created At</th>
+        <td><%= @blob.created_at.strftime('%Y-%m-%d %H:%M:%S') %></td>
+      </tr>
+      <tr>
+        <th>Actions</th>
+        <td>
+          <a href="<%= blob_path(@blob) %>">View Blob Details</a>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="card-body">
+  <a href="<%= attachments_path %>" class="back-link">← Back to Attachments</a>
+  <a href="<%= download_attachment_path(@attachment) %>" class="download-btn">Download File</a>
+</div> 

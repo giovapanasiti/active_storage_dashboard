@@ -1,0 +1,119 @@
+<h1 class="page-title">Blob Details</h1>
+
+<div class="card">
+  <div class="card-header">Blob Information</div>
+  <div class="card-body">
+    <table>
+      <tr>
+        <th>ID</th>
+        <td><%= @blob.id %></td>
+      </tr>
+      <tr>
+        <th>Key</th>
+        <td><%= @blob.key %></td>
+      </tr>
+      <tr>
+        <th>Filename</th>
+        <td><%= @blob.filename %></td>
+      </tr>
+      <tr>
+        <th>Content Type</th>
+        <td><%= @blob.content_type || 'Unknown' %></td>
+      </tr>
+      <tr>
+        <th>Byte Size</th>
+        <td><%= format_bytes(@blob.byte_size) %></td>
+      </tr>
+      <tr>
+        <th>Service Name</th>
+        <td><%= @blob.service_name %></td>
+      </tr>
+      <tr>
+        <th>Checksum</th>
+        <td><%= @blob.checksum || 'N/A' %></td>
+      </tr>
+      <tr>
+        <th>Created At</th>
+        <td><%= @blob.created_at.strftime('%Y-%m-%d %H:%M:%S') %></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<% if @blob.metadata.present? %>
+  <div class="card">
+    <div class="card-header">Metadata</div>
+    <div class="card-body">
+      <pre><%= JSON.pretty_generate(JSON.parse(@blob.metadata)) rescue @blob.metadata %></pre>
+    </div>
+  </div>
+<% end %>
+
+<div class="card">
+  <div class="card-header">Attachments (<%= @attachments.size %>)</div>
+  <div class="card-body">
+    <% if @attachments.any? %>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Record Type</th>
+            <th>Record ID</th>
+            <th>Created At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @attachments.each do |attachment| %>
+            <tr>
+              <td><%= attachment.id %></td>
+              <td><%= attachment.name %></td>
+              <td><%= attachment.record_type %></td>
+              <td><%= attachment.record_id %></td>
+              <td><%= attachment.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+              <td>
+                <a href="<%= attachment_path(attachment) %>">View</a>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p>No attachments found for this blob.</p>
+    <% end %>
+  </div>
+</div>
+
+<% if defined?(ActiveStorage::VariantRecord) && @variant_records.any? %>
+  <div class="card">
+    <div class="card-header">Variant Records (<%= @variant_records.size %>)</div>
+    <div class="card-body">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Variation Digest</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @variant_records.each do |variant_record| %>
+            <tr>
+              <td><%= variant_record.id %></td>
+              <td><%= variant_record.variation_digest %></td>
+              <td>
+                <a href="<%= variant_record_path(variant_record) %>">View</a>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
+
+<div class="card-body">
+  <a href="<%= blobs_path %>" class="back-link">← Back to Blobs</a>
+  <a href="<%= download_blob_path(@blob) %>" class="download-btn">Download File</a>
+</div> 

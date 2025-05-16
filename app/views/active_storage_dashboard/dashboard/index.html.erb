@@ -1,0 +1,87 @@
+<h1 class="page-title">Active Storage Dashboard</h1>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-value"><%= @blobs_count %></div>
+    <div class="stat-card-label">Total Blobs</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-card-value"><%= @attachments_count %></div>
+    <div class="stat-card-label">Total Attachments</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-card-value"><%= @variant_records_count %></div>
+    <div class="stat-card-label">Variant Records</div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-card-value"><%= format_bytes(@total_storage) %></div>
+    <div class="stat-card-label">Total Storage</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    Top Content Types
+  </div>
+  <div class="card-body">
+    <% if @content_types.any? %>
+      <table>
+        <thead>
+          <tr>
+            <th>Content Type</th>
+            <th>Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @content_types.each do |content_type, count| %>
+            <tr>
+              <td><%= content_type || 'Unknown' %></td>
+              <td><%= count %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p>No content types found.</p>
+    <% end %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    Recent Files
+  </div>
+  <div class="card-body">
+    <% if @recent_blobs.any? %>
+      <table>
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Content Type</th>
+            <th>Size</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_blobs.each do |blob| %>
+            <tr>
+              <td><%= blob.filename %></td>
+              <td><%= blob.content_type || 'Unknown' %></td>
+              <td><%= format_bytes(blob.byte_size) %></td>
+              <td><%= blob.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+              <td>
+                <a href="<%= blob_path(blob) %>">View Details</a>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p>No files found.</p>
+    <% end %>
+  </div>
+</div> 

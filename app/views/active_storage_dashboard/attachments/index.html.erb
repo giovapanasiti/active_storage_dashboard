@@ -1,0 +1,269 @@
+<h1 class="page-title">Active Storage Attachments</h1>
+
+<div class="view-options">
+  <button id="table-view-btn" class="view-toggle-btn active">Table View</button>
+  <button id="card-view-btn" class="view-toggle-btn">Card View</button>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if @attachments.any? %>
+      <div id="table-view">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Record Type</th>
+              <th>Record ID</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @attachments.each do |attachment| %>
+              <tr>
+                <td><%= attachment.id %></td>
+                <td><%= attachment.name %></td>
+                <td><%= attachment.record_type %></td>
+                <td><%= attachment.record_id %></td>
+                <td><%= attachment.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+                <td>
+                  <a href="<%= attachment_path(attachment) %>">View Details</a>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <div id="card-view" style="display: none;">
+        <div class="attachment-cards">
+          <% @attachments.each do |attachment| %>
+            <div class="attachment-card">
+              <div class="attachment-preview">
+                <% if previewable_attachment?(attachment) %>
+                  <%= attachment_preview(attachment) %>
+                <% else %>
+                  <div class="file-icon">
+                    <% if attachment.blob.content_type&.start_with?('image/') %>
+                      <div class="file-type-icon image-icon">IMG</div>
+                    <% elsif attachment.blob.content_type&.start_with?('video/') %>
+                      <div class="file-type-icon video-icon">VID</div>
+                    <% elsif attachment.blob.content_type&.start_with?('audio/') %>
+                      <div class="file-type-icon audio-icon">AUD</div>
+                    <% elsif attachment.blob.content_type&.start_with?('application/pdf') %>
+                      <div class="file-type-icon pdf-icon">PDF</div>
+                    <% else %>
+                      <div class="file-type-icon">
+                        <%= attachment.blob.content_type&.split('/')&.last&.upcase || 'FILE' %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+              <div class="attachment-info">
+                <h3 class="filename"><%= attachment.blob.filename %></h3>
+                <p class="attachment-name"><strong><%= attachment.name %></strong></p>
+                <p class="record-info"><%= attachment.record_type %> #<%= attachment.record_id %></p>
+                <p class="file-info">
+                  <%= format_bytes(attachment.blob.byte_size) %> • 
+                  <%= attachment.blob.content_type || 'Unknown type' %>
+                </p>
+                <div class="card-actions">
+                  <a href="<%= attachment_path(attachment) %>" class="view-details-btn">View Details</a>
+                  <a href="<%= download_attachment_path(attachment) %>" class="download-btn">Download</a>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+      <%= pagination_links(@total_count) %>
+    <% else %>
+      <p>No attachments found.</p>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .view-options {
+    margin-bottom: 20px;
+    text-align: right;
+  }
+  
+  .view-toggle-btn {
+    background-color: var(--light-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+  
+  .view-toggle-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+  
+  .attachment-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .attachment-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .attachment-preview {
+    height: 180px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .attachment-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  .file-icon {
+    width: 80px;
+    height: 100px;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+  
+  .file-type-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+    background-color: #6c757d;
+  }
+  
+  .file-type-icon.image-icon { background-color: #28a745; }
+  .file-type-icon.video-icon { background-color: #dc3545; }
+  .file-type-icon.audio-icon { background-color: #fd7e14; }
+  .file-type-icon.pdf-icon { background-color: #e83e8c; }
+  
+  .attachment-info {
+    padding: 16px;
+    flex: 1;
+  }
+  
+  .attachment-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+  }
+  
+  .attachment-info h3.filename {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .attachment-info p {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  
+  .attachment-name {
+    color: var(--dark-color) !important;
+  }
+  
+  .view-details-btn {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 12px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  
+  .download-btn {
+    display: inline-block;
+    margin-top: 8px;
+    margin-left: 8px;
+    padding: 6px 12px;
+    background-color: var(--success-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  
+  .view-details-btn:hover,
+  .download-btn:hover {
+    text-decoration: none;
+    opacity: 0.9;
+    color: white;
+  }
+  
+  .card-actions {
+    margin-top: 8px;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tableViewBtn = document.getElementById('table-view-btn');
+    const cardViewBtn = document.getElementById('card-view-btn');
+    const tableView = document.getElementById('table-view');
+    const cardView = document.getElementById('card-view');
+    
+    // Set the initial view based on localStorage or default to table
+    const currentView = localStorage.getItem('attachmentsViewMode') || 'table';
+    if (currentView === 'card') {
+      setCardView();
+    } else {
+      setTableView();
+    }
+    
+    // Add click handlers
+    tableViewBtn.addEventListener('click', setTableView);
+    cardViewBtn.addEventListener('click', setCardView);
+    
+    function setTableView() {
+      tableView.style.display = 'block';
+      cardView.style.display = 'none';
+      tableViewBtn.classList.add('active');
+      cardViewBtn.classList.remove('active');
+      localStorage.setItem('attachmentsViewMode', 'table');
+    }
+    
+    function setCardView() {
+      tableView.style.display = 'none';
+      cardView.style.display = 'block';
+      tableViewBtn.classList.remove('active');
+      cardViewBtn.classList.add('active');
+      localStorage.setItem('attachmentsViewMode', 'card');
+    }
+  });
+</script> 

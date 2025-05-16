@@ -1,0 +1,59 @@
+<h1 class="page-title">Variant Record Details</h1>
+
+<div class="card">
+  <div class="card-header">Variant Record Information</div>
+  <div class="card-body">
+    <table>
+      <tr>
+        <th>ID</th>
+        <td><%= @variant_record.id %></td>
+      </tr>
+      <tr>
+        <th>Blob ID</th>
+        <td><%= @variant_record.blob_id %></td>
+      </tr>
+      <tr>
+        <th>Variation Digest</th>
+        <td><%= @variant_record.variation_digest %></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">Associated Blob</div>
+  <div class="card-body">
+    <table>
+      <tr>
+        <th>ID</th>
+        <td><%= @blob.id %></td>
+      </tr>
+      <tr>
+        <th>Filename</th>
+        <td><%= @blob.filename %></td>
+      </tr>
+      <tr>
+        <th>Content Type</th>
+        <td><%= @blob.content_type || 'Unknown' %></td>
+      </tr>
+      <tr>
+        <th>Size</th>
+        <td><%= format_bytes(@blob.byte_size) %></td>
+      </tr>
+      <tr>
+        <th>Created At</th>
+        <td><%= @blob.created_at.strftime('%Y-%m-%d %H:%M:%S') %></td>
+      </tr>
+      <tr>
+        <th>Actions</th>
+        <td>
+          <a href="<%= blob_path(@blob) %>">View Blob Details</a>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="card-body">
+  <a href="<%= variant_records_path %>" class="back-link">← Back to Variant Records</a>
+</div> 
