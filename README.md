@@ -2,7 +2,7 @@
 
 A beautiful Rails engine that provides a sleek, modern dashboard for monitoring and inspecting Active Storage data in your Rails application.
 
-![Active Storage Dashboard Screenshot](https://github.com/giovapanasiti/active-storage-dashboard/raw/main/screenshots/dashboard.png)
+![Active Storage Dashboard Screenshot](https://github.com/giovapanasiti/active_storage_dashboard/blob/main/screenshots/dashboard.png)
 
 *Note: Replace with your actual screenshot after deployment*
 
@@ -53,13 +53,13 @@ The dashboard provides direct file download capabilities from both the list and 
   <summary>Click to see more screenshots</summary>
   
   #### Dashboard Overview
-  ![Dashboard Overview](https://github.com/giovapanasiti/active-storage-dashboard/raw/main/screenshots/dashboard.png)
+  ![Dashboard Overview](https://github.com/giovapanasiti/active_storage_dashboard/blob/main/screenshots/dashboard.png)
   
   #### Blob Details
-  ![Blob Details](https://github.com/giovapanasiti/active-storage-dashboard/raw/main/screenshots/blob-details.png)
+  ![Blob Details](https://github.com/giovapanasiti/active_storage_dashboard/blob/main/screenshots/blob-details.png)
   
   #### Files Gallery
-  ![Files Gallery](https://github.com/giovapanasiti/active-storage-dashboard/raw/main/screenshots/files-gallery.png)
+  ![Files Gallery](https://github.com/giovapanasiti/active_storage_dashboard/blob/main/screenshots/files-gallery.png)
   
 </details>
 
