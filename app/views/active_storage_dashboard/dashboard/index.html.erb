@@ -1,87 +1,715 @@
 <h1 class="page-title">Active Storage Dashboard</h1>
 
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-card-value"><%= @blobs_count %></div>
-    <div class="stat-card-label">Total Blobs</div>
-  </div>
-  
-  <div class="stat-card">
-    <div class="stat-card-value"><%= @attachments_count %></div>
-    <div class="stat-card-label">Total Attachments</div>
-  </div>
-  
-  <div class="stat-card">
-    <div class="stat-card-value"><%= @variant_records_count %></div>
-    <div class="stat-card-label">Variant Records</div>
-  </div>
-  
-  <div class="stat-card">
-    <div class="stat-card-value"><%= format_bytes(@total_storage) %></div>
-    <div class="stat-card-label">Total Storage</div>
+<div class="dashboard-overview">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-card-icon blob-icon">
+         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+</svg>
+
+        
+      </div>
+      <div class="stat-card-value count-up" data-value="<%= @blobs_count %>">0</div>
+      <div class="stat-card-label">Total Blobs</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-card-icon attachment-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
+</svg>
+
+      </div>
+      <div class="stat-card-value count-up" data-value="<%= @attachments_count %>">0</div>
+      <div class="stat-card-label">Total Attachments</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-card-icon variant-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33" />
+</svg>
+
+      </div>
+      <div class="stat-card-value count-up" data-value="<%= @variant_records_count %>">0</div>
+      <div class="stat-card-label">Variant Records</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-card-icon storage-icon">
+       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+</svg>
+
+      </div>
+      <div class="stat-card-value"><%= format_bytes(@total_storage) %></div>
+      <div class="stat-card-label">Total Storage</div>
+    </div>
   </div>
 </div>
 
-<div class="card">
-  <div class="card-header">
-    Top Content Types
+<div class="dashboard-columns">
+  <!-- Left Column: Content Type and Latest Activity -->
+  <div class="dashboard-column">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title">Content Type Distribution</div>
+      </div>
+      <div class="card-body">
+        <% if @content_types.any? %>
+          <div class="content-types-list">
+            <% total = @content_types.sum { |_, count| count } %>
+            <% @content_types.each do |content_type, count| %>
+              <div class="content-type-item">
+                <div class="content-type-info">
+                  <span class="content-type-badge"><%= content_type || 'Unknown' %></span>
+                  <span class="content-type-count"><%= count %> files</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: <%= (count.to_f / total * 100).round(1) %>%"></div>
+                  <div class="progress-text"><%= (count.to_f / total * 100).round(1) %>%</div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="no-data-message">No content types found.</p>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title">Latest Activity</div>
+      </div>
+      <div class="card-body">
+        <% if @recent_blobs.any? %>
+          <div class="activity-timeline">
+            <% @recent_blobs.each_with_index do |blob, index| %>
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <% if blob.content_type&.start_with?('image/') %>
+                    <div class="file-type-icon image-icon">IMG</div>
+                  <% elsif blob.content_type&.start_with?('video/') %>
+                    <div class="file-type-icon video-icon">VID</div>
+                  <% elsif blob.content_type&.start_with?('audio/') %>
+                    <div class="file-type-icon audio-icon">AUD</div>
+                  <% elsif blob.content_type&.start_with?('application/pdf') %>
+                    <div class="file-type-icon pdf-icon">PDF</div>
+                  <% else %>
+                    <div class="file-type-icon">
+                      <%= blob.content_type&.split('/')&.last&.upcase&.first(3) || 'FILE' %>
+                    </div>
+                  <% end %>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-title"><%= blob.filename %></div>
+                  <div class="activity-meta">
+                    <span class="activity-time"><%= time_ago_in_words(blob.created_at) %> ago</span>
+                    <span class="activity-size"><%= format_bytes(blob.byte_size) %></span>
+                  </div>
+                  <div class="activity-actions">
+                    <a href="<%= blob_path(blob) %>" class="btn btn-sm">View Details</a>
+                    <a href="<%= download_blob_path(blob) %>" class="btn btn-sm btn-outline">Download</a>
+                  </div>
+                </div>
+              </div>
+              <% if index < @recent_blobs.size - 1 %>
+                <div class="activity-divider"></div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="no-data-message">No recent activity found.</p>
+        <% end %>
+      </div>
+    </div>
   </div>
-  <div class="card-body">
-    <% if @content_types.any? %>
-      <table>
-        <thead>
-          <tr>
-            <th>Content Type</th>
-            <th>Count</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @content_types.each do |content_type, count| %>
-            <tr>
-              <td><%= content_type || 'Unknown' %></td>
-              <td><%= count %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% else %>
-      <p>No content types found.</p>
-    <% end %>
+  
+  <!-- Right Column: Storage Usage and Recent Files -->
+  <div class="dashboard-column">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title">Storage Usage</div>
+      </div>
+      <div class="card-body">
+        <div class="storage-summary">
+          <div class="storage-total">
+            <div class="storage-label">Total Storage Used</div>
+            <div class="storage-value"><%= format_bytes(@total_storage) %></div>
+          </div>
+          
+          <div class="storage-metrics">
+            <div class="storage-metric">
+              <div class="storage-metric-title">Average File Size</div>
+              <div class="storage-metric-value"><%= @blobs_count > 0 ? format_bytes(@total_storage / @blobs_count) : '0 B' %></div>
+            </div>
+            <div class="storage-metric">
+              <div class="storage-metric-title">Largest File</div>
+              <div class="storage-metric-value"><%= format_bytes(@largest_blob&.byte_size || 0) %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-title">Recent Files</div>
+      </div>
+      <div class="card-body">
+        <% if @recent_blobs.any? %>
+          <div class="recent-files-grid">
+            <% @recent_blobs.each do |blob| %>
+              <div class="recent-file-card">
+                <div class="file-preview">
+                  <% if blob.content_type&.start_with?('image/') %>
+                    <img src="<%= download_blob_path(blob, disposition: 'inline') %>" alt="<%= blob.filename %>" class="file-thumbnail">
+                  <% elsif blob.content_type&.start_with?('video/') %>
+                    <div class="file-type-icon video-icon">VID</div>
+                  <% elsif blob.content_type&.start_with?('audio/') %>
+                    <div class="file-type-icon audio-icon">AUD</div>
+                  <% elsif blob.content_type&.start_with?('application/pdf') %>
+                    <div class="file-type-icon pdf-icon">PDF</div>
+                  <% else %>
+                    <div class="file-type-icon">
+                      <%= blob.content_type&.split('/')&.last&.upcase&.first(3) || 'FILE' %>
+                    </div>
+                  <% end %>
+                </div>
+                <div class="file-info">
+                  <h3 class="file-name" title="<%= blob.filename %>"><%= blob.filename %></h3>
+                  <div class="file-meta">
+                    <span class="file-size"><%= format_bytes(blob.byte_size) %></span>
+                    <span class="file-date"><%= blob.created_at.strftime('%Y-%m-%d %H:%M') %></span>
+                  </div>
+                  <a href="<%= blob_path(blob) %>" class="view-details-btn">View Details</a>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="no-data-message">No files found.</p>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="card">
-  <div class="card-header">
-    Recent Files
-  </div>
-  <div class="card-body">
-    <% if @recent_blobs.any? %>
-      <table>
-        <thead>
-          <tr>
-            <th>Filename</th>
-            <th>Content Type</th>
-            <th>Size</th>
-            <th>Created</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @recent_blobs.each do |blob| %>
-            <tr>
-              <td><%= blob.filename %></td>
-              <td><%= blob.content_type || 'Unknown' %></td>
-              <td><%= format_bytes(blob.byte_size) %></td>
-              <td><%= blob.created_at.strftime('%Y-%m-%d %H:%M') %></td>
-              <td>
-                <a href="<%= blob_path(blob) %>">View Details</a>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% else %>
-      <p>No files found.</p>
-    <% end %>
-  </div>
-</div> 
+<style>
+  /* Base styles */
+  :root {
+    --primary-color: #4361ee;
+    --primary-dark-color: #3a0ca3;
+    --secondary-color: #6c757d;
+    --success-color: #2ecc71;
+    --info-color: #3498db;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --card-bg: #ffffff;
+    --border-radius: 0.5rem;
+    --transition-speed: 0.3s;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--dark-color);
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+  
+  .page-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark-color));
+    border-radius: 2px;
+  }
+  
+  /* Stats grid */
+  .dashboard-overview {
+    margin-bottom: 2rem;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  
+  .stat-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+  }
+  
+  .stat-card-icon {
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    color: white;
+  }
+  
+  .blob-icon {
+    background-color: var(--primary-color);
+  }
+  
+  .attachment-icon {
+    background-color: var(--success-color);
+  }
+  
+  .variant-icon {
+    background-color: var(--warning-color);
+  }
+  
+  .storage-icon {
+    background-color: var(--info-color);
+  }
+  
+  .stat-card-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  
+  .stat-card-label {
+    color: var(--secondary-color);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  
+  /* Dashboard columns layout */
+  .dashboard-columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 992px) {
+    .dashboard-columns {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .dashboard-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  /* Cards */
+  .card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition: box-shadow var(--transition-speed);
+  }
+  
+  .card:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+  
+  .card-header-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--dark-color);
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  /* Content types */
+  .content-types-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  
+  .content-type-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .content-type-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .content-type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--light-color);
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-family: monospace;
+  }
+  
+  .content-type-count {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+  }
+  
+  .progress-bar {
+    height: 8px;
+    background-color: var(--light-color);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    margin-top: 5px;
+    width: 100%;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+    border-radius: 4px;
+    transition: width 1s ease-in-out;
+  }
+  
+  .progress-text {
+    position: absolute;
+    right: 0;
+    top: -18px;
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+  }
+  
+  /* Activity timeline */
+  .activity-timeline {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .activity-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+  }
+  
+  .activity-divider {
+    height: 1.5rem;
+    width: 2px;
+    background-color: var(--light-color);
+    margin-left: 20px;
+  }
+  
+  .activity-icon {
+    flex-shrink: 0;
+  }
+  
+  .activity-content {
+    flex-grow: 1;
+  }
+  
+  .activity-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .activity-meta {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .activity-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  /* Storage summary */
+  .storage-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .storage-total {
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba(53, 152, 219, 0.1);
+    border-radius: var(--border-radius);
+  }
+  
+  .storage-label {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .storage-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+  
+  .storage-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .storage-metric {
+    text-align: center;
+    padding: 1rem;
+    background-color: var(--light-color);
+    border-radius: var(--border-radius);
+  }
+  
+  .storage-metric-title {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .storage-metric-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--dark-color);
+  }
+  
+  /* Recent files */
+  .recent-files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .recent-file-card {
+    background-color: var(--light-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .recent-file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .file-preview {
+    width: 80px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+  }
+  
+  .file-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .file-type-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+    background-color: #6c757d;
+    font-size: 0.7rem;
+  }
+  
+  .image-icon {
+    background-color: #3498db;
+  }
+  
+  .video-icon {
+    background-color: #e74c3c;
+  }
+  
+  .audio-icon {
+    background-color: #9b59b6;
+  }
+  
+  .pdf-icon {
+    background-color: #e67e22;
+  }
+  
+  .file-info {
+    padding: 0.75rem;
+    flex: 1;
+  }
+  
+  .file-name {
+    font-size: 0.9rem;
+    margin: 0 0 0.5rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .file-meta {
+    display: flex;
+    justify-content: space-between;
+    color: var(--secondary-color);
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .view-details-btn {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    font-size: 0.75rem;
+    transition: background-color 0.2s;
+    text-align: center;
+  }
+  
+  .view-details-btn:hover {
+    background-color: var(--primary-dark-color);
+  }
+  
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: var(--primary-dark-color);
+  }
+  
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+  }
+  
+  .btn-outline:hover {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  /* No data message */
+  .no-data-message {
+    text-align: center;
+    color: var(--secondary-color);
+    font-style: italic;
+    padding: 2rem 0;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // CountUp animation for stat values
+    document.querySelectorAll('.count-up').forEach(function(element) {
+      const target = parseInt(element.getAttribute('data-value'));
+      const duration = 1500;
+      const step = Math.ceil(target / (duration / 16)); // 16ms per frame (approx 60fps)
+      let current = 0;
+      
+      function updateCount() {
+        current += step;
+        if (current >= target) {
+          element.textContent = target.toLocaleString();
+          return;
+        }
+        element.textContent = current.toLocaleString();
+        requestAnimationFrame(updateCount);
+      }
+      
+      updateCount();
+    });
+    
+    // Animate progress bars on scroll
+    const progressBars = document.querySelectorAll('.progress-fill');
+    
+    const animateProgressBars = () => {
+      progressBars.forEach(bar => {
+        const rect = bar.getBoundingClientRect();
+        const isVisible = (rect.top <= window.innerHeight && rect.bottom >= 0);
+        
+        if (isVisible) {
+          const width = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(() => {
+            bar.style.width = width;
+          }, 100);
+        }
+      });
+    };
+    
+    // Initial animation
+    animateProgressBars();
+    
+    // Animate on scroll
+    window.addEventListener('scroll', animateProgressBars);
+  });
+</script> 
