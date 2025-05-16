@@ -4,7 +4,6 @@ A beautiful Rails engine that provides a sleek, modern dashboard for monitoring 
 
 ![Active Storage Dashboard Screenshot](https://github.com/giovapanasiti/active_storage_dashboard/blob/main/screenshots/dashboard.png)
 
-*Note: Replace with your actual screenshot after deployment*
 
 ## ✨ Features
 
