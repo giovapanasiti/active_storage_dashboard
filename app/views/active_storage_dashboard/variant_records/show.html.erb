@@ -30,7 +30,7 @@
       </tr>
       <tr>
         <th>Filename</th>
-        <td><%= @blob.filename %></td>
+        <td title="<%= @blob.filename %>"><%= truncate(@blob.filename.to_s, length: 30) %></td>
       </tr>
       <tr>
         <th>Content Type</th>

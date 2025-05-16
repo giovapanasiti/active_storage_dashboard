@@ -104,7 +104,7 @@
                   <% end %>
                 </div>
                 <div class="activity-content">
-                  <div class="activity-title"><%= blob.filename %></div>
+                  <div class="activity-title" title="<%= blob.filename %>"><%= truncate(blob.filename.to_s, length: 30) %></div>
                   <div class="activity-meta">
                     <span class="activity-time"><%= time_ago_in_words(blob.created_at, locale: :en) %> ago</span>
                     <span class="activity-size"><%= format_bytes(blob.byte_size) %></span>
@@ -179,7 +179,7 @@
                   <% end %>
                 </div>
                 <div class="file-info">
-                  <h3 class="file-name" title="<%= blob.filename %>"><%= blob.filename %></h3>
+                  <h3 class="file-name" title="<%= blob.filename %>"><%= truncate(blob.filename.to_s, length: 30) %></h3>
                   <div class="file-meta">
                     <span class="file-size"><%= format_bytes(blob.byte_size) %></span>
                     <span class="file-date"><%= blob.created_at.strftime('%Y-%m-%d %H:%M') %></span>

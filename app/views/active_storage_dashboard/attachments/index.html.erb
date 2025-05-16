@@ -63,7 +63,7 @@
                 <% end %>
               </div>
               <div class="attachment-info">
-                <h3 class="filename"><%= attachment.blob.filename %></h3>
+                <h3 class="filename" title="<%= attachment.blob.filename %>"><%= truncate(attachment.blob.filename.to_s, length: 30) %></h3>
                 <p class="attachment-name"><strong><%= attachment.name %></strong></p>
                 <p class="record-info"><%= attachment.record_type %> #<%= attachment.record_id %></p>
                 <p class="file-info">
