@@ -51,7 +51,7 @@ module ActiveStorageDashboard
         html = []
         
         if current_page > 1
-          html << link_to('« Previous', url_for(use_route: "active_storage_dashboard", page: current_page - 1), class: 'pagination-link')
+          html << link_to('« Previous', "#{request.path}?page=#{current_page - 1}", class: 'pagination-link')
         else
           html << content_tag(:span, '« Previous', class: 'pagination-link disabled')
         end
@@ -66,7 +66,7 @@ module ActiveStorageDashboard
         
         # First page
         if window_start > 1
-          html << link_to('1', url_for(use_route: "active_storage_dashboard", page: 1), class: 'pagination-link')
+          html << link_to('1', "#{request.path}?page=1", class: 'pagination-link')
           html << content_tag(:span, '...', class: 'pagination-ellipsis') if window_start > 2
         end
         
@@ -75,18 +75,18 @@ module ActiveStorageDashboard
           if page == current_page
             html << content_tag(:span, page, class: 'pagination-link current')
           else
-            html << link_to(page, url_for(use_route: "active_storage_dashboard", page: page), class: 'pagination-link')
+            html << link_to(page, "#{request.path}?page=#{page}", class: 'pagination-link')
           end
         end
         
         # Last page
         if window_end < total_pages
           html << content_tag(:span, '...', class: 'pagination-ellipsis') if window_end < total_pages - 1
-          html << link_to(total_pages, url_for(use_route: "active_storage_dashboard", page: total_pages), class: 'pagination-link')
+          html << link_to(total_pages, "#{request.path}?page=#{total_pages}", class: 'pagination-link')
         end
         
         if current_page < total_pages
-          html << link_to('Next »', url_for(use_route: "active_storage_dashboard", page: current_page + 1), class: 'pagination-link')
+          html << link_to('Next »', "#{request.path}?page=#{current_page + 1}", class: 'pagination-link')
         else
           html << content_tag(:span, 'Next »', class: 'pagination-link disabled')
         end
