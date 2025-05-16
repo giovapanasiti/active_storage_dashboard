@@ -91,7 +91,7 @@
       </tr>
       <tr>
         <th>Filename</th>
-        <td title="<%= @blob.filename %>"><%= truncate(@blob.filename.to_s, length: 100) %></td>
+        <td title="<%= @blob.filename %>" class="filename-truncate"><%= @blob.filename %></td>
       </tr>
       <tr>
         <th>Content Type</th>
@@ -159,5 +159,13 @@
     max-width: 100%;
     max-height: 600px;
     border-radius: 4px;
+  }
+  
+  .filename-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: inline-block;
   }
 </style> 

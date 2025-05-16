@@ -63,7 +63,7 @@
                 <% end %>
               </div>
               <div class="attachment-info">
-                <h3 class="filename" title="<%= attachment.blob.filename %>"><%= truncate(attachment.blob.filename.to_s, length: 100) %></h3>
+                <h3 class="filename" title="<%= attachment.blob.filename %>"><%= attachment.blob.filename %></h3>
                 <p class="attachment-name"><strong><%= attachment.name %></strong></p>
                 <p class="record-info"><%= attachment.record_type %> #<%= attachment.record_id %></p>
                 <p class="file-info">
@@ -122,6 +122,7 @@
     background-color: white;
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
   
   .attachment-preview {
@@ -171,11 +172,14 @@
   .attachment-info {
     padding: 16px;
     flex: 1;
+    min-width: 0;
+    width: 100%;
   }
   
   .attachment-info h3 {
     margin: 0 0 8px 0;
     font-size: 1.1rem;
+    width: 100%;
   }
   
   .attachment-info h3.filename {
@@ -184,12 +188,15 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
+    display: block;
   }
   
   .attachment-info p {
     margin: 0 0 8px 0;
     font-size: 0.9rem;
     color: #6c757d;
+    width: 100%;
   }
   
   .attachment-name {
@@ -228,6 +235,14 @@
   
   .card-actions {
     margin-top: 8px;
+  }
+  
+  .filename-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
   }
 </style>
 

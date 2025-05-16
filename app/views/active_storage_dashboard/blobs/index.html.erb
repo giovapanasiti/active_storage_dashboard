@@ -24,7 +24,7 @@
             <% @blobs.each do |blob| %>
               <tr>
                 <td><%= blob.id %></td>
-                <td title="<%= blob.filename %>"><%= truncate(blob.filename.to_s, length: 100) %></td>
+                <td title="<%= blob.filename %>" class="filename-truncate"><%= blob.filename %></td>
                 <td><%= blob.content_type || 'Unknown' %></td>
                 <td><%= format_bytes(blob.byte_size) %></td>
                 <td><%= blob.created_at.strftime('%Y-%m-%d %H:%M') %></td>
@@ -63,7 +63,7 @@
                 <% end %>
               </div>
               <div class="blob-info">
-                <h3 class="filename" title="<%= blob.filename %>"><%= truncate(blob.filename.to_s, length: 100) %></h3>
+                <h3 class="filename" title="<%= blob.filename %>"><%= blob.filename %></h3>
                 <p class="record-info">ID: <%= blob.id %></p>
                 <p class="file-info">
                   <%= format_bytes(blob.byte_size) %> • 
@@ -124,6 +124,7 @@
     background-color: white;
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
   
   .blob-preview {
@@ -173,6 +174,8 @@
   .blob-info {
     padding: 16px;
     flex: 1;
+    min-width: 0;
+    width: 100%;
   }
   
   .blob-info h3.filename {
@@ -181,12 +184,15 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
+    display: block;
   }
   
   .blob-info p {
     margin: 0 0 8px 0;
     font-size: 0.9rem;
     color: #6c757d;
+    width: 100%;
   }
   
   .view-details-btn {
@@ -221,6 +227,14 @@
   
   .card-actions {
     margin-top: 8px;
+  }
+  
+  .filename-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
   }
 </style>
 

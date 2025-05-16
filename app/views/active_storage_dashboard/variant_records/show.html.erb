@@ -30,7 +30,7 @@
       </tr>
       <tr>
         <th>Filename</th>
-        <td title="<%= @blob.filename %>"><%= truncate(@blob.filename.to_s, length: 100) %></td>
+        <td title="<%= @blob.filename %>" class="filename-truncate"><%= @blob.filename %></td>
       </tr>
       <tr>
         <th>Content Type</th>
@@ -56,4 +56,14 @@
 
 <div class="card-body">
   <a href="<%= variant_records_path %>" class="back-link">← Back to Variant Records</a>
-</div> 
+</div>
+
+<style>
+  .filename-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: inline-block;
+  }
+</style> 
