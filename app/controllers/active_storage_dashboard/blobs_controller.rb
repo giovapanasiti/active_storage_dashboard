@@ -16,6 +16,9 @@ module ActiveStorageDashboard
     def download
       @blob = ActiveStorage::Blob.find(params[:id])
       
+      # Determine the disposition (inline for preview, attachment for download)
+      disposition = params[:disposition] || 'attachment'
+      
       # Different approaches depending on Rails version
       if @blob.respond_to?(:open)
         # Rails 6.0+: Use the open method to get the file
@@ -24,7 +27,7 @@ module ActiveStorageDashboard
             send_data file.read, 
                       filename: @blob.filename.to_s, 
                       type: @blob.content_type || 'application/octet-stream', 
-                      disposition: 'attachment'
+                      disposition: disposition
           end
         rescue => e
           Rails.logger.error("Failed to download blob: #{e.message}")
@@ -36,14 +39,15 @@ module ActiveStorageDashboard
           send_data @blob.download, 
                     filename: @blob.filename.to_s, 
                     type: @blob.content_type || 'application/octet-stream', 
-                    disposition: 'attachment'
+                    disposition: disposition
         rescue => e
           Rails.logger.error("Failed to download blob: #{e.message}")
           redirect_to blob_path(@blob), alert: "Download failed: #{e.message}"
         end
       else
         # Fallback: Redirect to main app blob path
-        redirect_to main_app.rails_blob_path(@blob, disposition: 'attachment')
+        disposition_param = disposition == 'inline' ? { disposition: 'inline' } : { disposition: 'attachment' }
+        redirect_to main_app.rails_blob_path(@blob, disposition_param)
       end
     end
   end

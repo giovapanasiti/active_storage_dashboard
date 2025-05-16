@@ -1,5 +1,47 @@
 <h1 class="page-title">Blob Details</h1>
 
+<% if previewable_blob?(@blob) %>
+  <div class="card">
+    <div class="card-header">Media Preview</div>
+    <div class="card-body media-preview">
+      <% if @blob.content_type&.start_with?('image/') %>
+        <div class="image-preview">
+          <img src="<%= download_blob_path(@blob, disposition: 'inline') %>" alt="<%= @blob.filename %>" />
+        </div>
+      <% elsif @blob.content_type&.start_with?('video/') %>
+        <div class="video-preview">
+          <video controls width="100%">
+            <source src="<%= download_blob_path(@blob, disposition: 'inline') %>" type="<%= @blob.content_type %>">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      <% elsif @blob.content_type&.start_with?('audio/') %>
+        <div class="audio-preview">
+          <audio controls>
+            <source src="<%= download_blob_path(@blob, disposition: 'inline') %>" type="<%= @blob.content_type %>">
+            Your browser does not support the audio tag.
+          </audio>
+        </div>
+      <% elsif @blob.content_type == 'application/pdf' %>
+        <div class="pdf-preview">
+          <object data="<%= download_blob_path(@blob, disposition: 'inline') %>" type="application/pdf" width="100%" height="600px">
+            <p>It appears your browser doesn't support embedded PDFs. 
+               <a href="<%= download_blob_path(@blob, disposition: 'inline') %>">Click here to download the PDF</a>.</p>
+          </object>
+        </div>
+      <% elsif @blob.respond_to?(:preview) && @blob.previewable? %>
+        <div class="preview-image">
+          <% if Rails.gem_version >= Gem::Version.new('6.1') %>
+            <%= blob_preview(@blob) %>
+          <% else %>
+            <p>Preview not available. <a href="<%= download_blob_path(@blob, disposition: 'inline') %>">Download to view</a>.</p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
 <div class="card">
   <div class="card-header">Blob Information</div>
   <div class="card-body">
@@ -116,4 +158,46 @@
 <div class="card-body">
   <a href="<%= blobs_path %>" class="back-link">← Back to Blobs</a>
   <a href="<%= download_blob_path(@blob) %>" class="download-btn">Download File</a>
-</div> 
+</div>
+
+<style>
+  .media-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .image-preview {
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .image-preview img {
+    max-width: 100%;
+    max-height: 600px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .video-preview, .audio-preview, .pdf-preview {
+    width: 100%;
+  }
+  
+  .audio-preview {
+    padding: 20px 0;
+  }
+  
+  audio {
+    width: 100%;
+  }
+  
+  .preview-image img {
+    max-width: 100%;
+    max-height: 600px;
+    border-radius: 4px;
+  }
+</style> 

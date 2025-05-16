@@ -10,32 +10,35 @@ module ActiveStorageDashboard
       Rails.application.class.routes.url_helpers
     end
     
+    # Helper to generate a URL for direct blob viewing (for embedding media)
     def rails_blob_url(blob, disposition: nil)
-      # For UI purposes, we need the browser to be able to reach the blob directly
-      begin
-        # Try to generate a proper URL
-        if Rails.application.routes.url_helpers.respond_to?(:rails_blob_url)
-          # Generate full URL if host is set
-          if Rails.application.config.action_controller.default_url_options[:host].present?
-            return Rails.application.routes.url_helpers.rails_blob_url(blob, disposition: disposition)
-          end
-        end
+      # For media embedding, we need a reliable URL to the blob
+      if defined?(request) && request.present?
+        # Get the proper host from the request
+        host = request.base_url
         
-        # Fallback to path-only for development
-        if Rails.application.routes.url_helpers.respond_to?(:rails_blob_path)
-          return Rails.application.routes.url_helpers.rails_blob_path(blob, disposition: disposition)
+        # Different approaches depending on Rails version
+        if Rails.gem_version >= Gem::Version.new('6.1') && Rails.application.routes.url_helpers.respond_to?(:rails_storage_proxy_path)
+          # Rails 6.1+ uses proxy approach
+          return host + Rails.application.routes.url_helpers.rails_storage_proxy_path(blob, disposition: disposition)
+        elsif Rails.application.routes.url_helpers.respond_to?(:rails_service_blob_path)
+          # Rails 5.2-6.0
+          return host + Rails.application.routes.url_helpers.rails_service_blob_path(blob.key, disposition: disposition)
+        elsif Rails.application.routes.url_helpers.respond_to?(:rails_blob_path)
+          # Another approach
+          return host + Rails.application.routes.url_helpers.rails_blob_path(blob, disposition: disposition)
         end
-        
-        # Last resort for older Rails
-        if Rails.application.routes.url_helpers.respond_to?(:rails_service_blob_path)
-          key_args = { key: blob.key }
-          key_args[:disposition] = disposition if disposition.present?
-          return Rails.application.routes.url_helpers.rails_service_blob_path(**key_args)
-        end
-      rescue => e
-        Rails.logger.error("Failed to generate blob URL: #{e.message}")
-        return "#"
       end
+      
+      # Fallback to direct service URL
+      if blob.respond_to?(:url)
+        return blob.url(disposition: disposition)
+      elsif blob.respond_to?(:service_url)
+        return blob.service_url(disposition: disposition)
+      end
+      
+      # Last resort - return path to download action in our engine
+      active_storage_dashboard.download_blob_path(blob)
     end
     
     def pagination_links(total_count, per_page = 20)

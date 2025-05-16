@@ -5,13 +5,13 @@ ActiveStorageDashboard::Engine.routes.draw do
   
   resources :blobs, only: [:index, :show], path: 'blobs' do
     member do
-      get :download
+      get 'download(/:disposition)', to: 'blobs#download', as: :download
     end
   end
   
   resources :attachments, only: [:index, :show], path: 'attachments' do
     member do
-      get :download
+      get 'download(/:disposition)', to: 'attachments#download', as: :download
     end
   end
   
