@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "active_storage_dashboard"
-  spec.version       = "0.1.3"
+  spec.version       = "0.1.4"
   spec.authors       = ["Giovanni Panasiti"]
   spec.email         = ["giova.panasiti@gmail.com"]
 
