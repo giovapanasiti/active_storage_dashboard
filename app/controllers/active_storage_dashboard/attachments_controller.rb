@@ -16,8 +16,12 @@ module ActiveStorageDashboard
       @attachment = ActiveStorage::Attachment.find(params[:id])
       @blob = @attachment.blob
       
-      # Redirect to the blob download action
-      redirect_to download_blob_path(@blob)
+      # Pass along the disposition parameter if present
+      if params[:disposition].present?
+        redirect_to download_blob_path(@blob, disposition: params[:disposition])
+      else
+        redirect_to download_blob_path(@blob)
+      end
     end
   end
 end 

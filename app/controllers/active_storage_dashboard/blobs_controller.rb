@@ -17,6 +17,7 @@ module ActiveStorageDashboard
       @blob = ActiveStorage::Blob.find(params[:id])
       
       # Determine the disposition (inline for preview, attachment for download)
+      # Params can be route params or query params
       disposition = params[:disposition] || 'attachment'
       
       # Different approaches depending on Rails version

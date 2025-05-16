@@ -242,12 +242,24 @@ module ActiveStorageDashboard
     end
 
     # Fix URL generation by explicitly using the engine routes
-    def download_attachment_path(attachment)
-      active_storage_dashboard.download_attachment_path(attachment)
+    def download_attachment_path(attachment, options = {})
+      if options[:disposition].present?
+        # For paths with parameters, we need to construct the URL manually
+        disposition = options[:disposition]
+        active_storage_dashboard.download_attachment_path(attachment, disposition: disposition)
+      else
+        active_storage_dashboard.download_attachment_path(attachment)
+      end
     end
 
-    def download_blob_path(blob)
-      active_storage_dashboard.download_blob_path(blob)
+    def download_blob_path(blob, options = {})
+      if options[:disposition].present?
+        # For paths with parameters, we need to construct the URL manually
+        disposition = options[:disposition]
+        active_storage_dashboard.download_blob_path(blob, disposition: disposition)
+      else
+        active_storage_dashboard.download_blob_path(blob)
+      end
     end
 
     def attachment_path(attachment)
