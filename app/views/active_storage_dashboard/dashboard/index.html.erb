@@ -714,6 +714,134 @@
   }
 </style>
 
+<footer class="dashboard-footer">
+  <div class="footer-content">
+    <div class="love-message">
+      Made with <span class="heart">❤</span> by Giovanni Panasiti
+    </div>
+    <div class="opensource-message">
+      Embracing the open source spirit; because great software, like great ideas, deserves to be shared freely.
+    </div>
+    <div class="github-link">
+      <a href="https://github.com/giovapanasiti/active_storage_dashboard" target="_blank" class="github-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="github-icon">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+        </svg>
+        Star on GitHub
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Base styles */
+  :root {
+    --primary-color: #4361ee;
+    --primary-dark-color: #3a0ca3;
+    --secondary-color: #6c757d;
+    --success-color: #2ecc71;
+    --info-color: #3498db;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --card-bg: #ffffff;
+    --border-radius: 0.5rem;
+    --transition-speed: 0.3s;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Footer styles */
+  .dashboard-footer {
+    margin-top: 4rem;
+    padding: 2rem 0;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    background: linear-gradient(180deg, transparent, rgba(67, 97, 238, 0.05));
+  }
+  
+  .footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .love-message {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--dark-color);
+  }
+  
+  .heart {
+    color: var(--danger-color);
+    display: inline-block;
+    animation: heartbeat 1.5s ease infinite;
+  }
+  
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+  
+  .opensource-message {
+    color: var(--secondary-color);
+    font-style: italic;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+  
+  .github-link {
+    margin-top: 1rem;
+  }
+  
+  .github-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--dark-color);
+    color: white;
+    border-radius: 2rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  
+  .github-button:hover {
+    background-color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    color: white;
+  }
+  
+  .github-icon {
+    transition: transform 0.3s ease;
+  }
+  
+  .github-button:hover .github-icon {
+    transform: rotate(360deg);
+  }
+  
+  @media (max-width: 576px) {
+    .dashboard-footer {
+      padding: 1.5rem 1rem;
+    }
+    
+    .love-message {
+      font-size: 1rem;
+    }
+    
+    .opensource-message {
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // CountUp animation for stat values
