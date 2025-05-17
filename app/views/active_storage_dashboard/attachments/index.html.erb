@@ -1,5 +1,60 @@
 <h1 class="page-title">Active Storage Attachments</h1>
 
+<div class="filter-panel">
+  <div class="filter-header">
+    <h3 class="filter-title">Filter Attachments</h3>
+    <button id="toggle-filters" class="filter-toggle">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="filter-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+      </svg>
+    </button>
+  </div>
+  
+  <form action="<%= attachments_path %>" method="get" class="filters-form" id="filters-form">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="filter_name">Attachment Name:</label>
+        <input type="text" name="name" id="filter_name" class="filter-input" value="<%= params[:name] %>" placeholder="Search by name">
+      </div>
+      
+      <div class="filter-group">
+        <label for="filter_record_type">Record Type:</label>
+        <select name="record_type" id="filter_record_type" class="filter-select">
+          <option value="">All Record Types</option>
+          <% @record_types&.each do |record_type| %>
+            <option value="<%= record_type %>" <%= params[:record_type] == record_type ? 'selected' : '' %>><%= record_type %></option>
+          <% end %>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="filter_content_type">Content Type:</label>
+        <select name="content_type" id="filter_content_type" class="filter-select">
+          <option value="">All Content Types</option>
+          <% @content_types&.each do |content_type| %>
+            <option value="<%= content_type %>" <%= params[:content_type] == content_type ? 'selected' : '' %>><%= content_type || 'Unknown' %></option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+    
+    <div class="filter-actions">
+      <button type="submit" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="action-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" />
+        </svg>
+        Apply Filters
+      </button>
+      <a href="<%= attachments_path %>" class="btn btn-outline">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="action-icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        Clear
+      </a>
+    </div>
+  </form>
+</div>
+
 <div class="view-options">
   <button id="table-view-btn" class="view-toggle-btn active">Table View</button>
   <button id="card-view-btn" class="view-toggle-btn">Card View</button>
@@ -244,6 +299,121 @@
     max-width: 100%;
     display: block;
   }
+  
+  /* Enhanced Filter Panel */
+  .filter-panel {
+    background-color: var(--card-bg);
+    padding: 0;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background-color: rgba(0,0,0,0.02);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .filter-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+  }
+  
+  .filter-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--secondary-color);
+    padding: 0.25rem;
+  }
+  
+  .filter-toggle:hover {
+    color: var(--primary-color);
+  }
+  
+  .filter-icon, .action-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.25rem;
+  }
+  
+  .filters-form {
+    padding: 1.25rem;
+  }
+  
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 180px;
+  }
+  
+  .filter-group label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--dark-color);
+  }
+  
+  .filter-select, .filter-input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    background-color: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .filter-select:focus, .filter-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+    outline: none;
+  }
+  
+  .filter-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  @media (max-width: 768px) {
+    .filter-row {
+      flex-direction: column;
+    }
+    
+    .filter-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .filter-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 </style>
 
 <script>
@@ -280,5 +450,27 @@
       cardViewBtn.classList.add('active');
       localStorage.setItem('attachmentsViewMode', 'card');
     }
+
+    // Toggle filters visibility
+    const toggleFiltersBtn = document.getElementById('toggle-filters');
+    const filtersForm = document.getElementById('filters-form');
+    
+    // Check localStorage for saved state
+    const filtersVisible = localStorage.getItem('attachmentFiltersVisible') !== 'false';
+    
+    // Set initial state
+    if (!filtersVisible) {
+      filtersForm.style.display = 'none';
+    }
+    
+    toggleFiltersBtn.addEventListener('click', function() {
+      if (filtersForm.style.display === 'none') {
+        filtersForm.style.display = 'block';
+        localStorage.setItem('attachmentFiltersVisible', 'true');
+      } else {
+        filtersForm.style.display = 'none';
+        localStorage.setItem('attachmentFiltersVisible', 'false');
+      }
+    });
   });
 </script> 
