@@ -11,6 +11,9 @@ module ActiveStorageDashboard
       @content_types = ActiveStorage::Blob.group(:content_type).count.sort_by { |_, count| -count }.first(5)
       
       @recent_blobs = ActiveStorage::Blob.order(created_at: :desc).limit(5)
+
+      @purgable_blobs = ActiveStorage::Blob.left_outer_joins(:attachments)
+                                        .where(active_storage_attachments: { id: nil })
       
       # Find largest blob
       @largest_blob = ActiveStorage::Blob.order(byte_size: :desc).first
