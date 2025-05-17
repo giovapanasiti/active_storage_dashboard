@@ -83,7 +83,7 @@
             <% @blobs.each do |blob| %>
               <tr>
                 <td><%= blob.id %></td>
-                <td title="<%= blob.filename %>" class="filename-truncate"><%= blob.filename %></td>
+                <td title="<%= blob.filename %>" class="filename-truncate"><%= truncate(blob.filename.to_s, length: 40) %></td>
                 <td><%= blob.content_type || 'Unknown' %></td>
                 <td><%= format_bytes(blob.byte_size) %></td>
                 <td><%= blob.created_at.strftime('%Y-%m-%d %H:%M') %></td>
