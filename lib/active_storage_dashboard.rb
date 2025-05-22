@@ -9,10 +9,11 @@ require "active_storage_dashboard/analyzer"
 require "active_storage_dashboard/variant_regenerator"
 
 module ActiveStorageDashboard
+  mattr_accessor :base_controller_class, default: "ActionController::Base"
+
   class Railtie < Rails::Railtie
     rake_tasks do
       load File.expand_path("tasks/active_storage_dashboard_tasks.rake", __dir__)
     end
   end
-end 
-
+end

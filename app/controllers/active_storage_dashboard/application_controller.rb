@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module ActiveStorageDashboard
-  class ApplicationController < ActionController::Base
+  class ApplicationController < ActiveStorageDashboard.base_controller_class.constantize
     protect_from_forgery with: :exception
-    
+
     # Simple pagination without external dependencies
     helper_method :paginate
 
@@ -12,4 +12,4 @@ module ActiveStorageDashboard
       scope.limit(per_page).offset((@page - 1) * per_page)
     end
   end
-end 
+end
