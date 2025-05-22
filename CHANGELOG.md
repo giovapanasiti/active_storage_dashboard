@@ -2,6 +2,10 @@
 
 All notable changes to Active Storage Dashboard will be documented in this file.
 
+## [0.1.7] - 2025-05-22
+### Added
+- Add task to remove unused blobs and attachments 
+
 ## [0.1.5] - 2025-05-17
 ### Added
 - Footer with love message and GitHub link to dashboard

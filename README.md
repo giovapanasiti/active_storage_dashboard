@@ -46,6 +46,27 @@ Then visit `/active-storage-dashboard` in your browser to see the beautiful dash
 
 The dashboard provides direct file download capabilities from both the list and detail views. Simply click on the download button to get your files.
 
+### Tasks
+
+The dashboard includes a task to remove unused blobs and attachments. 
+
+You can run this task from the command line:
+
+```bash
+$ rails active_storage:dashboard:purge_orphans
+```
+Re-analyze blobs that are not yet analyzed
+```bash
+$ rails active_storage:dashboard:reanalyze
+```
+
+Regenerate missing or outdated variants
+```bash
+$ rails active_storage:dashboard:regenerate_variants
+```
+
+
+
 ### 📸 Screenshots
 
 <details>
