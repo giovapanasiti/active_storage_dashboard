@@ -71,16 +71,16 @@ $ rails active_storage:dashboard:regenerate_variants
 
 <details>
   <summary>Click to see more screenshots</summary>
-  
+
   #### Dashboard Overview
   ![Dashboard Overview](https://github.com/giovapanasiti/active_storage_dashboard/blob/main/screenshots/dashboard.png)
-  
+
   #### Blob Details
   ![Blob Details](https://github.com/giovapanasiti/active_storage_dashboard/blob/main/screenshots/blob-details.png)
-  
+
   #### Files Gallery
   ![Files Gallery](https://github.com/giovapanasiti/active_storage_dashboard/blob/main/screenshots/files-gallery.png)
-  
+
 </details>
 
 ## 🔒 Security Considerations
@@ -102,6 +102,11 @@ constraints lambda { |req| req.session[:user_id].present? || (req.env['warden'] 
 end
 ```
 
+Or, in your environment config or `application.rb`:
+```ruby
+config.active_storage_dashboard.base_controller_class = "AdminController"
+```
+
 
 ## 🤝 Contributing
 
@@ -109,4 +114,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/giovap
 
 ## 📝 License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT). 
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
