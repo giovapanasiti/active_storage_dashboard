@@ -110,7 +110,7 @@ config.active_storage_dashboard.base_controller_class = "AdminController"
 
 ## 🤝 Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/giovapanasiti/active-storage-dashboard.
+Bug reports and pull requests are welcome on GitHub at https://github.com/giovapanasiti/active_storage_dashboard.
 
 ## 📝 License
 
