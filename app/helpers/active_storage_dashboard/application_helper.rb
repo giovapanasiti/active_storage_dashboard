@@ -4,19 +4,19 @@ module ActiveStorageDashboard
   module ApplicationHelper
     # Include Rails URL helpers to easily generate blob URLs
     include Rails.application.routes.url_helpers
-    
+
     # Helper to get the main app's routes
     def main_app
       Rails.application.class.routes.url_helpers
     end
-    
+
     # Helper to generate a URL for direct blob viewing (for embedding media)
     def rails_blob_url(blob, disposition: nil)
       # For media embedding, we need a reliable URL to the blob
       if defined?(request) && request.present?
         # Get the proper host from the request
         host = request.base_url
-        
+
         # Different approaches depending on Rails version
         if Rails.gem_version >= Gem::Version.new('6.1') && Rails.application.routes.url_helpers.respond_to?(:rails_storage_proxy_path)
           # Rails 6.1+ uses proxy approach
@@ -29,14 +29,14 @@ module ActiveStorageDashboard
           return host + Rails.application.routes.url_helpers.rails_blob_path(blob, disposition: disposition)
         end
       end
-      
+
       # Fallback to direct service URL
       if blob.respond_to?(:url)
         return blob.url(disposition: disposition)
       elsif blob.respond_to?(:service_url)
         return blob.service_url(disposition: disposition)
       end
-      
+
       # Last resort - return path to download action in our engine
       active_storage_dashboard.download_blob_path(blob)
     end
@@ -46,104 +46,113 @@ module ActiveStorageDashboard
       
       total_pages = (total_count.to_f / per_page).ceil
       current_page = [@page.to_i, 1].max
-      
+
       content_tag :div, class: 'pagination' do
         html = []
-        
+
         if current_page > 1
-          html << link_to('« Previous', "#{request.path}?page=#{current_page - 1}", class: 'pagination-link')
+          html << generate_paginated_link('« Previous', current_page - 1)
         else
           html << content_tag(:span, '« Previous', class: 'pagination-link disabled')
         end
-        
+
         # Show window of pages
         window_size = 5
         window_start = [1, current_page - (window_size / 2)].max
         window_end = [total_pages, window_start + window_size - 1].min
-        
+
         # Adjust window_start if we're at the end
         window_start = [1, window_end - window_size + 1].max
-        
+
         # First page
         if window_start > 1
-          html << link_to('1', "#{request.path}?page=1", class: 'pagination-link')
+          html << generate_paginated_link('1', 1)
           html << content_tag(:span, '...', class: 'pagination-ellipsis') if window_start > 2
         end
-        
+
         # Page window
         (window_start..window_end).each do |page|
           if page == current_page
             html << content_tag(:span, page, class: 'pagination-link current')
           else
-            html << link_to(page, "#{request.path}?page=#{page}", class: 'pagination-link')
+            html << generate_paginated_link(page, page)
           end
         end
-        
+
         # Last page
         if window_end < total_pages
           html << content_tag(:span, '...', class: 'pagination-ellipsis') if window_end < total_pages - 1
-          html << link_to(total_pages, "#{request.path}?page=#{total_pages}", class: 'pagination-link')
+          html << generate_paginated_link(total_pages, total_pages)
         end
-        
+
         if current_page < total_pages
-          html << link_to('Next »', "#{request.path}?page=#{current_page + 1}", class: 'pagination-link')
+          html << generate_paginated_link('Next »', current_page + 1)
         else
           html << content_tag(:span, 'Next »', class: 'pagination-link disabled')
         end
-        
+
         safe_join(html)
       end
     end
-    
+
+    def generate_paginated_link(text, page_number)
+      query_params = request.GET.clone(freeze: false)
+      query_params['page'] = page_number
+
+      url_params = Rack::Utils.build_nested_query(query_params)
+
+      link_to(text, "#{request.path}?#{url_params}", class: "pagination-link")
+    end
+
     def format_bytes(bytes)
       return '0 B' if bytes.nil? || bytes == 0
-      
+
       units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
       exponent = (Math.log(bytes) / Math.log(1024)).to_i
       exponent = [exponent, units.size - 1].min
-      
+
       converted = bytes.to_f / (1024 ** exponent)
       "#{format('%.2f', converted)} #{units[exponent]}"
     end
-    
+
     # Check if a blob can be previewed
     def previewable_blob?(blob)
       return false unless blob.present?
-      
+
       # Check for representable content based on content type
       content_type = blob.content_type
       return false unless content_type.present?
-      
+
       image_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
       return true if image_types.include?(content_type)
-      
+
       # Check for previewable content in Rails 6+ using Active Storage's previewable method
-      if defined?(ActiveStorage::Blob.new.preview) && 
-         blob.respond_to?(:previewable?) && 
+      if defined?(ActiveStorage::Blob.new.preview) &&
+         blob.respond_to?(:previewable?) &&
          blob.previewable?
         return true
       end
-      
+
       false
     end
-    
+
     # Generate preview HTML for a blob
     def blob_preview(blob)
       return "" unless blob.present?
-      
+
       content_type = blob.content_type
-      
+
       if content_type&.start_with?('image/')
         url = Rails.application.routes.url_helpers.rails_blob_url(blob, disposition: "inline", only_path: true)
         return image_tag(url, alt: blob.filename)
-      elsif defined?(ActiveStorage::Blob.new.preview) && 
-            blob.respond_to?(:previewable?) && 
+      elsif defined?(ActiveStorage::Blob.new.preview) &&
+            blob.respond_to?(:previewable?) &&
             blob.previewable?
         # This will work in Rails 6+ with proper preview handlers configured
         begin
           url = Rails.application.routes.url_helpers.rails_blob_url(
-            blob.preview(resize: "300x300").processed.image, 
-            disposition: "inline", 
+            blob.preview(resize: "300x300").processed.image,
+            disposition: "inline",
             only_path: true
           )
           return image_tag(url, alt: blob.filename, class: "preview-image")
@@ -153,24 +162,24 @@ module ActiveStorageDashboard
           return content_tag(:div, "Preview not available", class: "preview-error")
         end
       end
-      
+
       return content_tag(:div, "No preview available", class: "no-preview")
     end
-    
+
     # Check if an attachment can be previewed
     def previewable_attachment?(attachment)
       return false unless attachment&.blob&.present?
-      
+
       previewable_blob?(attachment.blob)
     end
-    
+
     # Generate preview HTML for an attachment
     def attachment_preview(attachment)
       return "" unless attachment&.blob&.present?
-      
+
       blob_preview(attachment.blob)
     end
-    
+
     # Helper to generate a download URL for a blob
     def download_blob_url(blob)
       begin
@@ -179,20 +188,20 @@ module ActiveStorageDashboard
         if blob.respond_to?(:service_url)
           return blob.service_url(disposition: "attachment", filename: blob.filename.to_s)
         end
-        
+
         # If we're in a Rails 6.1+ app, use the direct representation URL
         if Rails.gem_version >= Gem::Version.new('6.1') &&
            blob.respond_to?(:representation) &&
            Rails.application.routes.url_helpers.respond_to?(:rails_blob_representation_url)
-          
+
           # Force a download by using the blob directly
           return Rails.application.routes.url_helpers.rails_blob_url(blob, disposition: "attachment")
         end
-        
+
         # For Rails 6.0, use standard blob URL approach
         if Rails.application.routes.url_helpers.respond_to?(:rails_blob_url)
           host_options = {}
-          
+
           # Make sure we have a host set for URL generation
           if defined?(request) && request.present?
             host_options[:host] = request.host
@@ -206,11 +215,11 @@ module ActiveStorageDashboard
             host_options[:port] = 3000
             host_options[:protocol] = 'http'
           end
-          
+
           # Ensure disposition is set for attachment download
           return Rails.application.routes.url_helpers.rails_blob_url(blob, **host_options, disposition: "attachment")
         end
-        
+
         # For Rails 5.2
         if Rails.application.routes.url_helpers.respond_to?(:rails_service_blob_url)
           host_options = {}
@@ -221,12 +230,12 @@ module ActiveStorageDashboard
           end
           return Rails.application.routes.url_helpers.rails_service_blob_url(blob.key, **host_options, disposition: "attachment")
         end
-        
+
         # If all else fails, use the direct download path (for development)
         if Rails.application.routes.url_helpers.respond_to?(:rails_blob_path)
           return Rails.application.routes.url_helpers.rails_blob_path(blob, disposition: "attachment")
         end
-        
+
         Rails.logger.error("Could not determine download URL for blob #{blob.id}")
         return "#"
       rescue => e
@@ -286,4 +295,4 @@ module ActiveStorageDashboard
       active_storage_dashboard.variant_record_path(variant_record)
     end
   end
-end 
+end
