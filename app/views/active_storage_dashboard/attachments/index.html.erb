@@ -16,7 +16,7 @@
         <label for="filter_name">Attachment Name:</label>
         <input type="text" name="name" id="filter_name" class="filter-input" value="<%= params[:name] %>" placeholder="Search by name">
       </div>
-      
+
       <div class="filter-group">
         <label for="filter_record_type">Record Type:</label>
         <select name="record_type" id="filter_record_type" class="filter-select">
@@ -26,7 +26,12 @@
           <% end %>
         </select>
       </div>
-      
+
+      <div class="filter-group">
+        <label for="filter_record_id">Record ID:</label>
+        <input type="text" name="record_id" id="filter_record_id" class="filter-input" value="<%= params[:record_id] %>" placeholder="Exact match on ID">
+      </div>
+
       <div class="filter-group">
         <label for="filter_content_type">Content Type:</label>
         <select name="content_type" id="filter_content_type" class="filter-select">

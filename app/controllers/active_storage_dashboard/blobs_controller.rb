@@ -4,12 +4,13 @@ module ActiveStorageDashboard
   class BlobsController < ApplicationController
     def index
       @blobs = ActiveStorage::Blob.order(created_at: :desc)
-      
-      # Get content types for filter dropdown
+
+      # Get filter dropdown options
       @content_types = ActiveStorage::Blob.distinct.pluck(:content_type).compact.sort
-      
+      @service_names = ActiveStorage::Blob.distinct.pluck(:service_name).compact.sort
+
       # Apply filters
-      apply_filters
+      @blobs = BlobFilter.new(@blobs, params).apply
 
       # Pagination after filters
       @total_count = @blobs.count
@@ -58,37 +59,6 @@ module ActiveStorageDashboard
         # Fallback: Redirect to main app blob path
         disposition_param = disposition == 'inline' ? { disposition: 'inline' } : { disposition: 'attachment' }
         redirect_to main_app.rails_blob_path(@blob, disposition_param)
-      end
-    end
-
-    private
-    
-    def apply_filters
-      # Filter by content type
-      if params[:content_type].present?
-        @blobs = @blobs.where(content_type: params[:content_type])
-      end
-      
-      # Filter by size
-      if params[:size].present?
-        case params[:size]
-        when 'small'
-          @blobs = @blobs.where('byte_size < ?', 1.megabyte)
-        when 'medium'
-          @blobs = @blobs.where('byte_size >= ? AND byte_size <= ?', 1.megabyte, 10.megabytes)
-        when 'large'
-          @blobs = @blobs.where('byte_size > ?', 10.megabytes)
-        end
-      end
-      
-      # Filter by status
-      if params[:status].present?
-        case params[:status]
-        when 'purgable'
-          @blobs = @blobs.left_outer_joins(:attachments).where(active_storage_attachments: { id: nil })
-        when 'attached'
-          @blobs = @blobs.joins(:attachments).distinct
-        end
       end
     end
   end
