@@ -17,7 +17,7 @@ module ActiveStorageDashboard
 
     def initialize(scope, params)
       @scope = scope
-      @params = params
+      @params = params.to_unsafe_h.symbolize_keys
     end
 
     def apply
