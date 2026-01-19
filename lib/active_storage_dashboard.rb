@@ -10,6 +10,8 @@ require "active_storage_dashboard/variant_regenerator"
 
 module ActiveStorageDashboard
   mattr_accessor :base_controller_class, default: "ActionController::Base"
+  mattr_accessor :homepage_url, default: "/"
+  mattr_accessor :homepage_link_text, default: "Back to main site"
 
   class Railtie < Rails::Railtie
     rake_tasks do
