@@ -13,6 +13,28 @@
   <form action="<%= blobs_path %>" method="get" class="filters-form" id="filters-form">
     <div class="filter-row">
       <div class="filter-group">
+        <label for="filter_key">Key:</label>
+        <input type="text" name="key" id="filter_key" class="filter-input" value="<%= params[:key] %>" placeholder="Exact match on key">
+      </div>
+
+      <div class="filter-group">
+        <label for="filter_filename">Filename:</label>
+        <input type="text" name="filename" id="filter_filename" class="filter-input" value="<%= params[:filename] %>" placeholder="Search filename">
+      </div>
+
+      <div class="filter-group">
+        <label for="filter_service_name">Service:</label>
+        <select name="service_name" id="filter_service_name" class="filter-select">
+          <option value="">All Services</option>
+          <% @service_names&.each do |service_name| %>
+            <option value="<%= service_name %>" <%= params[:service_name] == service_name ? 'selected' : '' %>><%= service_name %></option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-group">
         <label for="filter_type">Content Type:</label>
         <select name="content_type" id="filter_type" class="filter-select">
           <option value="">All Types</option>
@@ -21,7 +43,7 @@
           <% end %>
         </select>
       </div>
-      
+
       <div class="filter-group">
         <label for="filter_size">Size:</label>
         <select name="size" id="filter_size" class="filter-select">
@@ -31,7 +53,7 @@
           <option value="large" <%= params[:size] == 'large' ? 'selected' : '' %>>Large (> 10MB)</option>
         </select>
       </div>
-      
+
       <div class="filter-group">
         <label for="filter_status">Status:</label>
         <select name="status" id="filter_status" class="filter-select">
