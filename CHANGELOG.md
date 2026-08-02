@@ -2,6 +2,22 @@
 
 All notable changes to Active Storage Dashboard will be documented in this file.
 
+## [Unreleased]
+### Security
+- Documented the gem's exposure to **CVE-2026-66066** (arbitrary file read / RCE via libvips
+  "unfuzzed" loaders in Active Storage variant processing). The gem does not contain the
+  vulnerability and cannot fix it, but its `reanalyze` and `regenerate_variants` tasks and its
+  preview helpers feed uploaded files to libvips in bulk, which can trigger an otherwise dormant
+  exploit. See the advisory section in the README.
+
+### Added
+- `ActiveStorageDashboard::SafetyCheck`, which reports whether the host application's Active Storage
+  image pipeline is exposed to CVE-2026-66066 (activestorage version, variant processor, libvips
+  version, and `VIPS_BLOCK_UNTRUSTED`).
+- A "Processing Safety" panel on the dashboard overview, plus a warning banner shown on every
+  dashboard page while an unsafe configuration is detected. Undetectable configurations are reported
+  as unknown rather than as safe.
+
 ## [0.1.7] - 2025-05-22
 ### Added
 - Add task to remove unused blobs and attachments 

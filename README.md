@@ -4,6 +4,47 @@ A beautiful Rails engine that provides a sleek, modern dashboard for monitoring 
 
 ![Active Storage Dashboard Screenshot](https://github.com/giovapanasiti/active_storage_dashboard/blob/main/screenshots/dashboard.png)
 
+## 🚨 Security advisory: CVE-2026-66066 (Active Storage / libvips)
+
+**CVE-2026-66066** allows an unauthenticated attacker who can upload a crafted file to read arbitrary
+files from your server, including the process environment — which usually holds `secret_key_base`,
+your master key, and credentials for your database and storage provider. That can escalate to remote
+code execution.
+
+**This gem does not contain the vulnerability and cannot fix it.** The flaw is in Active Storage's
+use of libvips, and the fix is to upgrade `activestorage` (to `7.2.3.2`, `8.0.5.1`, `8.1.3.1` or
+later) with libvips `>= 8.13`.
+
+What matters here is that **this dashboard triggers the vulnerable code paths in bulk**, so it can
+fire an exploit that would otherwise sit dormant:
+
+| Feature | Call | Why it matters |
+|---|---|---|
+| `rails active_storage:dashboard:reanalyze` | `blob.analyze` | Hands the raw uploaded bytes straight to `Vips::Image.new_from_file`. The only gate is the attacker-supplied content type. |
+| `rails active_storage:dashboard:regenerate_variants` | `representation(...).processed` | Reprocesses every stored variant through libvips. |
+| Blob/attachment previews in the UI | `blob.preview(...).processed` | Runs the previewer chain over untrusted files while you browse. |
+
+Two things make this worse than an ordinary application code path. These operations run over **every
+blob**, so an attacker does not need to lure anyone into viewing their file — they just wait for
+maintenance. And the rake tasks typically run **on a production host with the full deployment
+environment loaded**, which is exactly the environment the advisory says gets exfiltrated.
+
+Note that an application can be affected even if it never displays image variants; image *analysis*
+alone is enough.
+
+### What to do
+
+1. **Do not run `active_storage:dashboard:reanalyze`, `:regenerate_variants`, or `:all`** until you
+   have upgraded. These are the highest-risk paths in this gem.
+2. Upgrade `activestorage` and ensure libvips `>= 8.13`.
+3. **Rotate every secret readable by the application process** — `secret_key_base`, your master key
+   and everything in `credentials.yml.enc`, storage service keys, database credentials, and any
+   third-party tokens. Upgrading closes the hole but does not un-leak anything already taken.
+4. If you cannot upgrade yet but have libvips `>= 8.13`, set `VIPS_BLOCK_UNTRUSTED=1` in the
+   application's environment as an interim mitigation.
+
+The dashboard shows a **Processing Safety** panel reporting the state of your own environment, and
+warns on every page while it detects an unsafe configuration.
 
 ## ✨ Features
 
