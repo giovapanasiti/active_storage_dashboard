@@ -1,0 +1,96 @@
+<% check = safety_check %>
+
+<div class="card safety-panel safety-<%= check.status %>">
+  <div class="card-header">
+    Processing Safety
+    <span class="safety-badge safety-badge-<%= check.status %>">
+      <%= { ok: 'OK', warning: 'Action needed', critical: 'Vulnerable', unknown: 'Unknown' }[check.status] %>
+    </span>
+  </div>
+  <div class="card-body">
+    <p class="safety-summary"><%= check.summary %></p>
+
+    <table class="safety-table">
+      <% check.details.each do |label, value, state| %>
+        <tr>
+          <th><%= label %></th>
+          <td class="safety-value safety-value-<%= state %>"><%= value %></td>
+        </tr>
+      <% end %>
+    </table>
+
+    <% unless check.ok? %>
+      <div class="safety-actions">
+        <strong>What to do</strong>
+        <ol>
+          <li>Do not run <code>active_storage:dashboard:reanalyze</code>,
+              <code>:regenerate_variants</code> or <code>:all</code> until this is resolved &mdash;
+              they feed uploaded files to libvips in bulk, on a host that usually has your full
+              production environment loaded.</li>
+          <li>Upgrade <code>activestorage</code> to 7.2.3.2, 8.0.5.1, 8.1.3.1 or later, with
+              libvips &gt;= 8.13.</li>
+          <li>Rotate every secret readable by this process: <code>secret_key_base</code>, your
+              master key and everything in <code>credentials.yml.enc</code>, storage service keys,
+              database credentials, and third-party tokens. Upgrading does not un-leak anything
+              already taken.</li>
+          <li>If you cannot upgrade yet and have libvips &gt;= 8.13, set
+              <code>VIPS_BLOCK_UNTRUSTED=1</code> in this application's environment as an interim
+              mitigation.</li>
+        </ol>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .safety-panel.safety-critical { border-left: 4px solid var(--danger-color); }
+  .safety-panel.safety-warning  { border-left: 4px solid var(--warning-color); }
+  .safety-panel.safety-unknown  { border-left: 4px solid var(--secondary-color); }
+  .safety-panel.safety-ok       { border-left: 4px solid var(--success-color); }
+
+  .safety-badge {
+    float: right;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.75rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .safety-badge-critical { background-color: var(--danger-color); }
+  .safety-badge-warning  { background-color: var(--warning-color); color: #3d3000; }
+  .safety-badge-unknown  { background-color: var(--secondary-color); }
+  .safety-badge-ok       { background-color: var(--success-color); }
+
+  .safety-summary { margin-bottom: 1rem; }
+
+  .safety-table { width: 100%; }
+  .safety-table th {
+    text-align: left;
+    width: 200px;
+    font-weight: 500;
+    padding: 0.35rem 0;
+  }
+  .safety-table td { padding: 0.35rem 0; }
+
+  .safety-value { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.875rem; }
+  .safety-value-good    { color: var(--success-color); }
+  .safety-value-bad     { color: var(--danger-color); font-weight: 600; }
+  .safety-value-unknown { color: var(--secondary-color); }
+
+  .safety-actions {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+  }
+  .safety-actions ol { margin: 0.5rem 0 0 1.25rem; }
+  .safety-actions li { margin-bottom: 0.4rem; }
+  .safety-actions code {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.2rem;
+    font-size: 0.85rem;
+  }
+</style>

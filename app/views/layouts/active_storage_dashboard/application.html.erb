@@ -514,6 +514,34 @@
       border-color: #2e4ecf;
       color: white;
     }
+
+    .safety-banner {
+      padding: 0.85rem 1.25rem;
+      border-radius: 0.25rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid;
+    }
+
+    .safety-banner strong { display: block; margin-bottom: 0.2rem; }
+    .safety-banner a { margin-left: 0.5rem; white-space: nowrap; }
+
+    .safety-banner-critical {
+      background-color: #f8d7da;
+      border-left-color: var(--danger-color);
+      color: #721c24;
+    }
+
+    .safety-banner-warning {
+      background-color: #fff3cd;
+      border-left-color: var(--warning-color);
+      color: #856404;
+    }
+
+    .safety-banner-unknown {
+      background-color: #e2e3e5;
+      border-left-color: var(--secondary-color);
+      color: #383d41;
+    }
   </style>
 </head>
 <body>
@@ -530,6 +558,16 @@
     </div>
     
     <div class="content">
+      <% unless safety_check.ok? %>
+        <div class="safety-banner safety-banner-<%= safety_check.status %>">
+          <strong><%= safety_check.status == :unknown ? 'Check your Active Storage configuration' : 'Security warning' %></strong>
+          <span><%= safety_check.summary %></span>
+          <% if controller_name != 'dashboard' %>
+            <a href="<%= active_storage_dashboard.root_path %>">See details &rarr;</a>
+          <% end %>
+        </div>
+      <% end %>
+
       <% if flash[:alert] %>
         <div class="flash flash-alert"><%= flash[:alert] %></div>
       <% end %>

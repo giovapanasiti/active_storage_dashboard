@@ -41,6 +41,12 @@ module ActiveStorageDashboard
       active_storage_dashboard.download_blob_path(blob)
     end
     
+    # Reports on the host application's exposure to CVE-2026-66066. Memoized so
+    # the layout banner and the dashboard panel share a single probe.
+    def safety_check
+      @safety_check ||= ActiveStorageDashboard::SafetyCheck.new
+    end
+
     def pagination_links(total_count, per_page = 20)
       return if total_count <= per_page
       
